@@ -1,58 +1,97 @@
+# AWS 3-Tier Application (CDK)
 
-# Welcome to your CDK Python project!
+## Overview
+This project demonstrates a production-style **3-tier architecture** on AWS using the **AWS Cloud Development Kit (CDK)** in Python.  
+It provisions infrastructure for:
+- **Presentation Layer:** Amazon S3 + CloudFront for static content
+- **Application Layer:** Amazon ECS Fargate or AWS Lambda (depending on configuration)
+- **Data Layer:** Amazon RDS (PostgreSQL/MySQL)
 
-This is a blank project for CDK development with Python.
+The project is designed as a **portfolio-ready example** to showcase cloud infrastructure skills for Solutions Architect and DevOps roles.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+---
 
-This project is set up like a standard Python project.  The initialization
-process also creates a virtualenv within this project, stored under the `.venv`
-directory.  To create the virtualenv it assumes that there is a `python3`
-(or `python` for Windows) executable in your path with access to the `venv`
-package. If for any reason the automatic creation of the virtualenv fails,
-you can create the virtualenv manually.
+## Architecture Diagram
 
-To manually create a virtualenv on MacOS and Linux:
+        ┌─────────────────────────┐
+        │     Presentation Layer  │
+        │  S3 + CloudFront         │
+        └───────────┬─────────────┘
+                    │
+        ┌───────────▼─────────────┐
+        │    Application Layer    │
+        │ ECS Fargate / Lambda    │
+        └───────────┬─────────────┘
+                    │
+        ┌───────────▼─────────────┐
+        │       Data Layer        │
+        │ Amazon RDS (Postgres)   │
+        └─────────────────────────┘
 
-```
-$ python3 -m venv .venv
-```
 
-After the init process completes and the virtualenv is created, you can use the following
-step to activate your virtualenv.
+---
 
-```
-$ source .venv/bin/activate
-```
+## Technologies Used
+- **AWS CDK** (Python)
+- **Amazon S3**
+- **Amazon CloudFront**
+- **Amazon ECS Fargate** or **AWS Lambda**
+- **Amazon RDS**
+- **Amazon VPC**
 
-If you are a Windows platform, you would activate the virtualenv like this:
+---
 
-```
-% .venv\Scripts\activate.bat
-```
+## Prerequisites
+- AWS Account & CLI configured
+- Python 3.10+
+- AWS CDK CLI installed
+- Node.js 18+ (CDK dependency)
 
-Once the virtualenv is activated, you can install the required dependencies.
+---
 
-```
-$ pip install -r requirements.txt
-```
+## Setup Instructions
 
-At this point you can now synthesize the CloudFormation template for this code.
+1. **Clone the repository**
+    ```bash
+    git clone https://github.com/<your-username>/aws-3tier-cdk.git
+    cd aws-3tier-cdk
+    ```
 
-```
-$ cdk synth
-```
+2. **Create and activate a virtual environment**
+    ```bash
+    python3 -m venv .venv
+    source .venv/bin/activate
+    ```
 
-To add additional dependencies, for example other CDK libraries, just add
-them to your `setup.py` file and rerun the `pip install -r requirements.txt`
-command.
+3. **Install dependencies**
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-## Useful commands
+4. **Bootstrap the environment**
+    ```bash
+    cdk bootstrap aws://<ACCOUNT_ID>/<REGION>
+    ```
 
- * `cdk ls`          list all stacks in the app
- * `cdk synth`       emits the synthesized CloudFormation template
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk docs`        open CDK documentation
+5. **Synthesize the CloudFormation template**
+    ```bash
+    cdk synth
+    ```
 
-Enjoy!
+6. **Deploy**
+    ```bash
+    cdk deploy
+    ```
+
+---
+
+## Deployment Flow
+1. Write or modify infrastructure in `aws_3tier_cdk_stack.py`
+2. Run `cdk synth` to verify the CloudFormation template
+3. Deploy to AWS with `cdk deploy`
+4. Test and iterate
+
+---
+
+## License
+This project is licensed under the MIT License.
