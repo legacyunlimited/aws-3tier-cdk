@@ -1,4 +1,7 @@
-# AWS 3-Tier Application (CDK)
+![CDK Synth](https://github.com/legacyunlimited/aws-3tier-cdk/actions/workflows/cdk-synth.yml/badge.svg)
+
+
+# AWS 3-Tier (CDK, Python): VPC (public/private), ALB → EC2 Auto Scaling (Amazon Linux), optional RDS. Includes Linux hardening (SSM, no SSH by default), Nginx, systemd, and full IaC deploy/teardown. Built as a portfolio-ready example for Solutions Architect / DevOps interviews.
 
 ## Overview
 This project demonstrates a production-style **3-tier architecture** on AWS using the **AWS Cloud Development Kit (CDK)** in Python.  
