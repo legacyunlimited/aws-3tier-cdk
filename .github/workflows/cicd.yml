@@ -1,53 +1,48 @@
-name: CDK CI/CD
+name: CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
-  cdk:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout repo
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    # 1. Checkout code
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      # 2. Setup Python
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.13
+    # 2. Set up Python
+    - name: Set up Python 3.13
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.13
 
-      # 3. Install Python dependencies
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+    # 3. Install dependencies in a virtual environment
+    - name: Install dependencies
+      run: |
+        python -m venv .venv
+        source .venv/bin/activate
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-      # 4. Run unit tests
-      - name: Run unit tests
-        run: |
-          python -m venv .venv
-          source .venv/bin/activate
-          pytest -v tests/
+    # 4. Run unit tests
+    - name: Run tests
+      run: |
+        source .venv/bin/activate
+        pytest -v tests/
 
-      # 5. Install CDK
-      - name: Install AWS CDK
-        run: npm install -g aws-cdk
+    # 5. CDK synth (generate CloudFormation template)
+    - name: CDK synth
+      run: |
+        source .venv/bin/activate
+        npx cdk synth
 
-      # 6. Bootstrap CDK environment (optional)
-      #- name: CDK Bootstrap
-      #  run: cdk bootstrap aws://$AWS_ACCOUNT_ID/$AWS_REGION
-
-      # 7. CDK synth
-      - name: CDK Synth
-        run: cdk synth
-
-      # 8. CDK diff
-      - name: CDK Diff
-        run: cdk diff
+    # 6. CDK diff (compare local stack with deployed stack)
+    - name: CDK diff
+      run: |
+        source .venv/bin/activate
+        npx cdk diff
