@@ -1,3 +1,11 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+*.pyo
+*.pyd
+*.env
+
 *.swp
 package-lock.json
 __pycache__
@@ -8,3 +16,12 @@ __pycache__
 # CDK asset staging directory
 .cdk.staging
 cdk.out
+Set up GitHub Actions for CI/CD (tests + cdk synth)
+
+
+# Lambda dependencies
+lambdas/PIL/
+lambdas/boto3/
+lambdas/botocore/
+lambdas/urllib3/
+lambdas/s3transfer/

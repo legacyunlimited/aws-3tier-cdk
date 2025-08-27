@@ -1,0 +1,10 @@
+[User]
+   |
+   v
+[Presentation Layer: presentation.html]
+   |
+   v
+[Application Layer: lambda/encode.py]
+   |
+   v
+[Data Layer: mock_data/dummy_db.txt]

@@ -1,0 +1,87 @@
+name: CDK CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install aws-cdk.core aws-cdk.aws-s3 aws-cdk.aws-lambda boto3 pillow
+
+      - name: Run unit tests
+        run: |
+          source .venv/bin/activate
+          python -m unittest discover -s tests
+
+  synth:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js for CDK
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install CDK
+        run: npm install -g aws-cdk@2
+
+      - name: Install Python dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
+          pip install aws-cdk.aws-s3 aws-cdk.aws-lambda boto3 pillow
+
+      - name: CDK Synth
+        run: |
+          source .venv/bin/activate
+          cdk synth
+
+  deploy:
+    needs: synth
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js for CDK
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install CDK
+        run: npm install -g aws-cdk@2
+
+      - name: Install Python dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
+          pip install aws-cdk.aws-s3 aws-cdk.aws-lambda boto3 pillow
+
+      - name: CDK Deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+        run: |
+          source .venv/bin/activate
+          cdk deploy --require-approval never
