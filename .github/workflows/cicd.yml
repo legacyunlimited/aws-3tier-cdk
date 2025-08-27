@@ -1,63 +1,56 @@
-name: CDK Deploy
+name: CDK CI/CD
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  cdk:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout repo
-      - name: Checkout code
+      # Step 1: Checkout the repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Setup Python
+      # Step 2: Set up Python
       - name: Set up Python 3.13
         uses: actions/setup-python@v4
         with:
           python-version: 3.13
 
-      # 3. Create & activate virtual environment
-      - name: Setup virtual environment
+      # Step 3: Create virtual environment
+      - name: Create virtual environment
+        run: python -m venv .venv
+
+      # Step 4: Activate virtual environment and install dependencies
+      - name: Install dependencies
         run: |
-          python -m venv .venv
           source .venv/bin/activate
           python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
 
-      # 4. Install Python dependencies
-      - name: Install requirements
+      # Step 5: Run tests
+      - name: Run tests
         run: |
           source .venv/bin/activate
-          pip install -r requirements.txt
-
-      # 5. Install CDK CLI globally
-      - name: Install CDK CLI
-        run: npm install -g aws-cdk
-
-      # 6. Run tests
-      - name: Run pytest
-        run: |
-          source .venv/bin/activate
-          pip install pytest
           pytest -v tests/
 
-      # 7. Bootstrap CDK (if needed)
-      - name: CDK bootstrap
+      # Step 6: Configure AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # Step 7: Deploy CDK stack
+      - name: CDK Deploy
         run: |
           source .venv/bin/activate
           cdk bootstrap
-
-      # 8. Synthesize CDK
-      - name: CDK synth
-        run: |
-          source .venv/bin/activate
-          cdk synth
-
-      # 9. Deploy CDK
-      - name: CDK deploy
-        run: |
-          source .venv/bin/activate
           cdk deploy --require-approval never
