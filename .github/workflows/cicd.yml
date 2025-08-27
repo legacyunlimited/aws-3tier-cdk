@@ -1,4 +1,4 @@
-name: CDK CI/CD
+name: CI/CD
 
 on:
   push:
@@ -9,38 +9,25 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repo
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Python
-      - name: Set up Python 3.13
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: 3.13
 
-      # Step 3: Create virtual environment
       - name: Create virtual environment
         run: python -m venv .venv
 
-      # Step 4: Activate virtual environment and install dependencies
       - name: Install dependencies
-        run: |
-          source .venv/bin/activate
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
+        run: .venv/bin/python -m pip install --upgrade pip
+      - run: .venv/bin/python -m pip install -r requirements.txt
 
-      # Step 5: Run tests
-      - name: Run tests
-        run: |
-          source .venv/bin/activate
-          pytest -v tests/
-
-      # Step 6: Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -48,9 +35,5 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # Step 7: Deploy CDK stack
-      - name: CDK Deploy
-        run: |
-          source .venv/bin/activate
-          cdk bootstrap
-          cdk deploy --require-approval never
+      - name: Run tests
+        run: .venv/bin/python -m pytest -v tests/
